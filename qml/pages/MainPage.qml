@@ -32,8 +32,6 @@ Page {
     SilicaFlickable {
         anchors.fill: parent
 
-        //contentHeight: foo.height
-
         PullDownMenu {
             MenuItem {
                 text: qsTr("About")
@@ -57,14 +55,31 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width
 
-            icon.source: "qrc:///icons/harbour-hammerhead-torch.png"
-            icon.width: parent.width
-            icon.fillMode: image.PreserveAspectFit
+            icon.source: ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
 
-            onClicked: console.log("clicked!");
+            icon.width: parent.width
+            icon.fillMode: Image.PreserveAspectFit
+
+            onClicked:
+            {
+                console.log("clicked!")
+                led.toggleState()
+                icon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+
+            }
+
+
         }
 
     }
+
+    onStatusChanged:
+    {
+        console.log("page status " + page.status)
+        if ( page.status == PageStatus.Active )
+            button.icon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+    }
+
 }
 
 

@@ -22,40 +22,31 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 */
 
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#ifndef LED_CONTROL_H
+#define LED_CONTROL_H
 
 #include <QObject>
 #include <QFile>
 #include <QTextStream>
+#include <QString>
 
 #include "sailfishapp.h"
 
-class FileIO : public QObject
+class LEDControl : public QObject
 {
     Q_OBJECT
 
-public slots:
-    bool write(const QString& source, const QString& data)
-    {
-        // if the source is an empty string, error
-        if (source.isEmpty())
-            return false;
-
-        // if the source can't be opened write only, error
-        QFile file(source);
-        if (!file.open(QFile::WriteOnly | QFile::Truncate))
-            return false;
-
-        // make a textstream of the file and write the new data to it
-        QTextStream out(&file);
-        out << data;
-        file.close();
-        return true;
-    }
-
 public:
-    FileIO() {}
+    //LEDControl(QString fp); // QML needs to be able to initialise the type without arguments, so can't have any arguments in constructor
+    LEDControl();
+
+public slots:
+    Q_INVOKABLE void setPath(const QString fp);
+    Q_INVOKABLE bool isOn();
+    Q_INVOKABLE bool toggleState();
+
+private:
+    QFile file;
 };
 
-#endif // FILEIO_H
+#endif // LED_CONTROL_H

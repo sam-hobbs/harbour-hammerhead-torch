@@ -23,6 +23,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import uk.co.samhobbs 0.1
 import "pages"
 
 ApplicationWindow
@@ -31,6 +32,12 @@ ApplicationWindow
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
     allowedOrientations: Orientation.All
     _defaultPageOrientations: Orientation.All
+
+    // class defined in ledcontrol.h for interacting with led controls
+    LEDControl {
+        id: led
+    }
+
 }
 
 

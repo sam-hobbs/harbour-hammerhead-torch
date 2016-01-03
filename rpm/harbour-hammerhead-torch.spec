@@ -16,7 +16,7 @@ Summary:    Torch application for the LG Nexus 5 ("Hammerhead") port of Sailfish
 Version:    0.1
 Release:    1
 Group:      Qt/Qt
-License:    LICENSE
+License:    GPLv3+
 URL:        http://example.org/
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-hammerhead-torch.yaml
@@ -28,7 +28,7 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  desktop-file-utils
 
 %description
-Short description of my SailfishOS Application
+Hammerhead Torch is a simple torch app for the LG Nexus 5 ("Hammerhead") port of SailfishOS
 
 
 %prep

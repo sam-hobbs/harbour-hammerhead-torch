@@ -2,9 +2,11 @@ TARGET = harbour-hammerhead-torch
 
 CONFIG += sailfishapp
 
-SOURCES += src/harbour-hammerhead-torch.cpp
+SOURCES += src/harbour-hammerhead-torch.cpp \
+    src/ledcontrol.cpp
 
-HEADERS += src/fileio.h
+HEADERS += \
+    src/ledcontrol.h
 
 OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     qml/cover/CoverPage.qml \

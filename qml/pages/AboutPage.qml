@@ -39,10 +39,10 @@ Page {
             height: 3 * Theme.paddingLarge
         }
         Image {
-            width: parent.width / 3
-            height: width
+            width: parent.width / 2
+            height: parent.width / 3
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "qrc:///icons/harbour-hammerhead-torch.png"
+            source: "qrc:///hammerhead"
             smooth: true
             asynchronous: true
         }

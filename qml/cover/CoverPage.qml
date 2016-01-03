@@ -23,6 +23,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import uk.co.samhobbs 0.1
 
 Cover {
     id: cover
@@ -31,19 +32,17 @@ Cover {
 
     Image {
         id: coverIcon
-        source:"qrc:///icons/harbour-hammerhead-torch.png"
+        source: ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+
         fillMode: Image.PreserveAspectFit
         cache: true
         anchors.centerIn: parent
-        //anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         x: Theme.paddingSmall
     }
 
     Label {
         id: label
-        //anchors.horizontalCenter: parent.horizontalCenter
-        //anchors.verticalCenterOffset: +parent.height/4
 
         anchors.centerIn: parent
         anchors.verticalCenterOffset: -parent.height/3
@@ -53,11 +52,21 @@ Cover {
         font.pixelSize: Theme.fontSizeLarge
     }
 
+
     CoverActionList {
         id: coverAction
 
         CoverAction {
-            iconSource: "image://theme/icon-cover-pause"
+            iconSource: "image://theme/icon-m-dot"
+
+            onTriggered:
+            {
+                console.log("cover action clicked!")
+                led.toggleState()
+                coverIcon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+
+            }
+
         }
     }
 }

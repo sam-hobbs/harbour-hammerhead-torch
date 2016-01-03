@@ -28,7 +28,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <sailfishapp.h>
 #include <QQmlEngine>
 #include <QScopedPointer>
-#include "fileio.h"
+#include "ledcontrol.h"
 
 //int main(int argc, char *argv[])
 //{
@@ -41,10 +41,9 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
     QScopedPointer<QQuickView> v(SailfishApp::createView());
 
-    qmlRegisterType<FileIO>("uk.co.samhobbs", 0, 1, "FileIO");
+    qmlRegisterType<LEDControl>("uk.co.samhobbs", 0, 1, "LEDControl");
 
     // Start the application.
-    //v->setSource(SailfishApp::pathTo("qml/cppqml.qml"));
     v->setSource(SailfishApp::pathTo("qml/harbour-hammerhead-torch.qml"));
     v->show();
     return app->exec();

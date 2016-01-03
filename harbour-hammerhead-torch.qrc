@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/icons">
-        <file alias="harbour-hammerhead-torch.png">resources/icons/hammerhead-silhouette.png</file>
+    <qresource>
+        <file alias="hammerhead">resources/icons/hammerhead-silhouette.png</file>
+        <file alias="hammerhead-inverted">resources/icons/hammerhead-silhouette-inverted.png</file>
     </qresource>
 </RCC>
