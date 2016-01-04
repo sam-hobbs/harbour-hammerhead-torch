@@ -30,10 +30,6 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QScopedPointer>
 #include "ledcontrol.h"
 
-//int main(int argc, char *argv[])
-//{
-//    return SailfishApp::main(argc, argv);
-//}
 
 int main(int argc, char *argv[])
 {

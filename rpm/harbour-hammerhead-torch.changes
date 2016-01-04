@@ -8,8 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Sun Apr 13 2014 Jack Tar <jack.tar@example.com> 0.0.1-1
-- Scrubbed the deck
-- Hoisted the sails
+* Mon Jan 04 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.2-1
+- Update to version 0.2:
+  * Connected cover action and main page icon button so triggering one will
+    change the icon for both
 
-
+* Sun Jan 03 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.1-1
+- Initial release (version 0.1)

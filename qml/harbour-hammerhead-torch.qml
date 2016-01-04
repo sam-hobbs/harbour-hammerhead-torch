@@ -36,6 +36,7 @@ ApplicationWindow
     // class defined in ledcontrol.h for interacting with led controls
     LEDControl {
         id: led
+        on: led.isOn
     }
 
 }

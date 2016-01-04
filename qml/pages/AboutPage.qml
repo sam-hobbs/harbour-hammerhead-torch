@@ -42,7 +42,7 @@ Page {
             width: parent.width / 2
             height: parent.width / 3
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "qrc:///hammerhead"
+            source: "qrc:///hammerhead-inverted"
             smooth: true
             asynchronous: true
         }
@@ -113,6 +113,6 @@ Page {
         anchors.bottomMargin: Theme.paddingSmall
         color: Theme.secondaryColor
         font.pixelSize: Theme.fontSizeTiny
-        text: "v0.1"
+        text: "v0.2"
     }
 }

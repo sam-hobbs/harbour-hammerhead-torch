@@ -31,8 +31,15 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include "sailfishapp.h"
 
 LEDControl::LEDControl() {
-    // control file is here /sys/class/leds/led\:flash_torch/brightness
-    setPath("/sys/class/leds/led:flash_torch/brightness");
+    // set the path of the control file that turns the flashlight on / off
+    // on hammerhead the control file is /sys/class/leds/led\:flash_torch/brightness
+    // but the file doesn't exist in the virtual machine, or the Jolla phone
+    // uncomment one of the lines below to set the appropriate path
+    //setPath("/home/nemo/test.txt"); // for virtual machine testing
+    setPath("/sys/class/leds/led:flash_torch/brightness"); // for Hammerhead
+
+    // get initial file state
+    m_isOn = checkFile();
 }
 
 
@@ -58,7 +65,7 @@ void LEDControl::setPath(const QString fp)
 
 }
 
-bool LEDControl::isOn()
+bool LEDControl::checkFile()
 {
     // if the file is not readable, open it read only
     if ( file.isOpen() )
@@ -69,19 +76,20 @@ bool LEDControl::isOn()
     QTextStream textStream(&file);
     QString data = textStream.readAll();
     qDebug() << "file contains: " << data;
-    //qDebug() << "data converted to int is: " << data.toInt();
+
+    file.close();
+
     if (data.toInt() == 1)
         return true;
     return false;
 
-    file.close();
 }
 
 bool LEDControl::toggleState()
 {
 
     QString data;
-    if ( isOn() )
+    if ( m_isOn )
     {
         // turn off
         data = QString::number(0);
@@ -106,5 +114,25 @@ bool LEDControl::toggleState()
     QTextStream out(&file);
     out << data;
     file.close();
+
+    // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
+    setOnBool(!m_isOn);
+
     return 0;
+}
+
+bool LEDControl::isOn()
+{
+    qDebug() << "isOn method used";
+    return m_isOn;
+}
+
+void LEDControl::setOnBool(bool onBool)
+{
+    qDebug() << "setOnBool method used";
+    m_isOn = onBool;
+
+    qDebug() << "emitting isOnBoolChanged signal, value is" << m_isOn;
+    emit isOnBoolChanged(m_isOn);
+
 }

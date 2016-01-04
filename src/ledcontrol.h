@@ -37,16 +37,26 @@ class LEDControl : public QObject
     Q_OBJECT
 
 public:
-    //LEDControl(QString fp); // QML needs to be able to initialise the type without arguments, so can't have any arguments in constructor
-    LEDControl();
+    LEDControl(); // can't have any arguments in constructor, because QML needs to be able to initialise it
 
 public slots:
     Q_INVOKABLE void setPath(const QString fp);
-    Q_INVOKABLE bool isOn();
+    Q_INVOKABLE bool checkFile();
     Q_INVOKABLE bool toggleState();
+
+public:
+    // http://doc.qt.io/qt-4.8/properties.html
+    Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged);
+
+    bool isOn();
+    void setOnBool(bool);
+
+signals:
+    void isOnBoolChanged(bool);
 
 private:
     QFile file;
+    bool m_isOn;
 };
 
 #endif // LED_CONTROL_H

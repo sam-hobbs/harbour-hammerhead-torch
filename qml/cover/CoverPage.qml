@@ -32,7 +32,7 @@ Cover {
 
     Image {
         id: coverIcon
-        source: ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+        source: ( led.on ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
 
         fillMode: Image.PreserveAspectFit
         cache: true
@@ -63,8 +63,6 @@ Cover {
             {
                 console.log("cover action clicked!")
                 led.toggleState()
-                coverIcon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
-
             }
 
         }

@@ -55,7 +55,7 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width
 
-            icon.source: ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
+            icon.source: ( led.on ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
 
             icon.width: parent.width
             icon.fillMode: Image.PreserveAspectFit
@@ -64,20 +64,11 @@ Page {
             {
                 console.log("clicked!")
                 led.toggleState()
-                icon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
-
             }
 
 
         }
 
-    }
-
-    onStatusChanged:
-    {
-        console.log("page status " + page.status)
-        if ( page.status == PageStatus.Active )
-            button.icon.source = ( led.isOn() ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
     }
 
 }
