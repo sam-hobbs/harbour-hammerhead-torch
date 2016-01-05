@@ -36,7 +36,9 @@ ApplicationWindow
     // class defined in ledcontrol.h for interacting with led controls
     LEDControl {
         id: led
-        on: led.isOn
+        on: led.isOn // TODO fix warning "unable to assign a function to a property of any type other than var"
+        //controlFile: led.getPath()
+        controlFile: led.controlFile
     }
 
 }

@@ -29,6 +29,8 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QFile>
 #include <QTextStream>
 #include <QString>
+#include <QSettings>
+#include <QVariant>
 
 #include "sailfishapp.h"
 
@@ -39,24 +41,39 @@ class LEDControl : public QObject
 public:
     LEDControl(); // can't have any arguments in constructor, because QML needs to be able to initialise it
 
-public slots:
-    Q_INVOKABLE void setPath(const QString fp);
-    Q_INVOKABLE bool checkFile();
-    Q_INVOKABLE bool toggleState();
-
-public:
-    // http://doc.qt.io/qt-4.8/properties.html
+    // property for allowing QML to read/write/track whether the flashlight is on
     Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged);
 
+    // path to the control file
+    //Q_PROPERTY(QVariant controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
+    Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
+
+public slots:
+    // methods for reading/writing flashlight state
     bool isOn();
+    Q_INVOKABLE bool toggleState();
     void setOnBool(bool);
+
+    // methods for reading/writing control file path
+    //QVariant getPath();
+    //Q_INVOKABLE void setPath(QVariant fp);
+    QString getPath();
+    Q_INVOKABLE void setPath(QString fp);
+
+    Q_INVOKABLE QString detectPath();
 
 signals:
     void isOnBoolChanged(bool);
+    //void controlFilePathChanged(QVariant);
+    void controlFilePathChanged(QString);
 
 private:
+    bool checkFile();
+
     QFile file;
     bool m_isOn;
+    QString controlFilePath;
+    QSettings *settings;
 };
 
 #endif // LED_CONTROL_H
