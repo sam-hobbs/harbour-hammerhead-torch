@@ -29,71 +29,80 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QFileInfo>
 #include <QSettings>
 #include <QVariant>
+#include <QProcess>
 
 #include "ledcontrol.h"
 #include "sailfishapp.h"
 
 LEDControl::LEDControl() {
-    // set the path of the control file that turns the flashlight on / off
-    // on hammerhead the control file is /sys/class/leds/led\:flash_torch/brightness
-    // but the file doesn't exist in the virtual machine, or the Jolla phone
-    // uncomment one of the lines below to set the appropriate path
-    //setPath("/home/nemo/test.txt"); // for virtual machine testing
-    //setPath("/sys/class/leds/led:flash_torch/brightness"); // for Hammerhead
-    //setPath("/sys/kernel/debug/flash_adp1650/mode"); // for Jolla phone
-
     // initialise settings object
-    settings = new QSettings("Feathers_McGraw","harbour-hammerhead-torch");
+    //settings = new QSettings("Feathers_McGraw","harbour-hammerhead-torch");
+    settings = new QSettings(); // application name defaults to binary name
 
+    // set the path of the control file that turns the flashlight on / off
     QString filePath;
 
-    // query app settings for the path of the existing controlfile
+    // on hammerhead the control file is /sys/class/leds/led\:flash_torch/brightness
+    // on Jolla phone it is /sys/kernel/debug/flash_adp1650/mode
+    // check for path stored in app settings
+
     if( settings->contains("controlFilePath") )
     {
-        filePath = settings->value("controlFilePath",QString("")).toString();
+        setPath(settings->value("controlFilePath",QString("")).toString());
     }
     else
     {
         // try autodetecting
-        filePath = detectPath();
+        detectPath();
     }
-
-    qDebug() << "filepath detected is " << filePath;
-
-    // set the file path
-    //setPath( QVariant(filePath) );
-    setPath( filePath );
 
     // get initial file state
     m_isOn = checkFile();
 
+    // if light is not on, turn it on
+    if (!m_isOn) {
+        toggleState();
+    }
+
     qDebug() << "end of constructor";
 }
 
-QString LEDControl::detectPath()
+LEDControl::~LEDControl() {
+    // turn the torch off when closing the app
+    if( isOn() )
+        toggleState();
+}
+
+void LEDControl::detectPath()
 {
     qDebug() << "detectPath called";
     QFileInfo file;
 
     // try Hammerhead control file location
     file.setFile("/sys/class/leds/led:flash_torch/brightness");
+    file.refresh();
     if (file.exists())
-        return file.canonicalFilePath();
-
-    // try Jolla phone file location
-    file.setFile("/sys/kernel/debug/flash_adp1650/mode");
-    if (file.exists())
-        return file.canonicalFilePath();
-
-    // if we get to here and haven't found the path, filepath is unknown. return path to test file
-    return QString("/home/nemo/hammerhead-torch-test.txt");
+    {
+        qDebug() << "Detected Hammerhead";
+        setPath( file.canonicalFilePath() );
+    }
+    else
+    {
+        // try Jolla phone file location
+        file.setFile("/sys/kernel/debug/flash_adp1650/mode");
+        file.refresh();
+        if (file.exists())
+        {
+            qDebug() << "Detected Jolla phone";
+            setPath( file.canonicalFilePath() );
+        }
+        else
+        {
+            // if we get to here and haven't found the path, filepath is unknown. use test file
+            setPath("/home/nemo/hammerhead-torch-test.txt");
+        }
+    }
 }
-
-//QVariant LEDControl::getPath()
-//{
-//    qDebug() << "getPath called";
-//    return QVariant(controlFilePath);
-//}
 
 
 QString LEDControl::getPath()
@@ -103,12 +112,8 @@ QString LEDControl::getPath()
 }
 
 
-//void LEDControl::setPath(QVariant filepath)
 void LEDControl::setPath(QString fp)
 {
-    //qDebug() << "setPath called, variant is " << filepath;
-    //QString fp = filepath.toString();
-    //qDebug() << "string version is " << fp;
     qDebug() << "setPath called, value is " << fp;
 
     if (fp == file.fileName())
@@ -136,7 +141,6 @@ void LEDControl::setPath(QString fp)
     // store the new fp in settings
     settings->setValue("controlFilePath",fp);
 
-
 }
 
 bool LEDControl::checkFile()
@@ -149,7 +153,6 @@ bool LEDControl::checkFile()
 
     QTextStream textStream(&file);
     QString data = textStream.readAll();
-    //qDebug() << "file contains: " << data;
 
     file.close();
 
@@ -174,20 +177,35 @@ bool LEDControl::toggleState()
         data = QString::number(1);
     }
 
-    // close and open again with different properties
-    if ( file.isOpen() )
-        file.close();
+//    // close and open again with different properties
+//    if ( file.isOpen() )
+//        file.close();
 
-    // if the file can't be opened RW, error
-    if ( !file.open(QFile::ReadWrite | QFile::Truncate | QIODevice::Text))
+//    // if the file can't be opened RW, error
+//    if ( !file.open(QFile::WriteOnly | QFile::Truncate | QIODevice::Text) )
+//    {
+//        qCritical() << "can't open file with read write permissions";
+//        return 1;
+//    }
+
+//    // make a textstream of the file and write the new data to it
+//    QTextStream out(&file);
+//    out << data << "\n";
+//    file.close();
+
+    QProcess shell;
+    QString command;
+    command = "echo " + data + " > " + file.fileName();
+    qDebug() << "command to be executed in shell: " << command;
+    shell.start("sh", QStringList() << "-c" << command );
+    shell.waitForFinished();
+
+    // check that the write succeeded before changing the state of led boolean
+    if ( shell.exitStatus() )
+    {
+        qDebug() << "error writing to file";
         return 1;
-
-    //qDebug() << "Data to be written is: " << data;
-
-    // make a textstream of the file and write the new data to it
-    QTextStream out(&file);
-    out << data;
-    file.close();
+    }
 
     // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
     setOnBool(!m_isOn);
@@ -197,16 +215,11 @@ bool LEDControl::toggleState()
 
 bool LEDControl::isOn()
 {
-    //qDebug() << "isOn method used";
     return m_isOn;
 }
 
 void LEDControl::setOnBool(bool onBool)
 {
-    //qDebug() << "setOnBool method used";
     m_isOn = onBool;
-
-    //qDebug() << "emitting isOnBoolChanged signal, value is" << m_isOn;
     emit isOnBoolChanged(m_isOn);
-
 }

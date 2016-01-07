@@ -36,10 +36,7 @@ Page {
         PageHeader {
             title: qsTr("Settings")
         }
-//        Item {
-//            width: 1
-//            height: Theme.paddingLarge
-//        }
+
         Label {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
@@ -88,12 +85,18 @@ Page {
             text: led.controlFile
             color: Theme.secondaryColor
 
-            placeholderText: led.getPath()
-            placeholderColor: Theme.secondaryColor
+            //placeholderText: led.controlFile
+            //placeholderColor: Theme.secondaryColor
 
             // text displayed below textfield
             label: "enter a new path and press return"
 
+            EnterKey.enabled: text != led.controlFile
+            EnterKey.iconSource: "image://theme/icon-m-enter-next"
+            EnterKey.onClicked: {
+                console.log("clicked!")
+                led.controlFile = text
+            }
         }
 
 

@@ -36,7 +36,7 @@ Page {
         }
         Item {
             width: 1
-            height: 3 * Theme.paddingLarge
+            height: Theme.paddingLarge
         }
         Image {
             width: parent.width / 2
@@ -55,7 +55,8 @@ Page {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeMedium
             color: Theme.primaryColor
-            text: qsTr("A simple torch app for the LG Nexus 5")
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            text: qsTr("A simple torch app for the LG Nexus 5, Jolla phone and more")
         }
         Item {
             width: 1
@@ -68,6 +69,13 @@ Page {
             font.pixelSize: Theme.fontSizeExtraSmall
             color: Theme.secondaryColor
             text: "Copyright © 2016 Sam Hobbs"
+        }
+        Label {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeExtraSmall
+            color: Theme.secondaryColor
+            text: "(Feathers McGraw)"
         }
         Item {
             width: 1
@@ -113,6 +121,6 @@ Page {
         anchors.bottomMargin: Theme.paddingSmall
         color: Theme.secondaryColor
         font.pixelSize: Theme.fontSizeTiny
-        text: "v0.2"
+        text: "v0.5"
     }
 }

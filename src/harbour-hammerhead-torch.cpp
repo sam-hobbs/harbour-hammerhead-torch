@@ -29,6 +29,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QQmlEngine>
 #include <QScopedPointer>
 #include "ledcontrol.h"
+#include <QtQuick>
 
 
 int main(int argc, char *argv[])

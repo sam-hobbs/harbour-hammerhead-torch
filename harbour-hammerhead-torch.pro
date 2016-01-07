@@ -16,6 +16,7 @@ OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     rpm/harbour-hammerhead-torch.changes.in \
     rpm/harbour-hammerhead-torch.spec \
     rpm/harbour-hammerhead-torch.yaml \
+    rpm/harbour-hammerhead-torch.changes \
     translations/*.ts \
     harbour-hammerhead-torch.desktop
 

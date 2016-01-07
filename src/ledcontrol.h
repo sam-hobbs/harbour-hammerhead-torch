@@ -40,12 +40,12 @@ class LEDControl : public QObject
 
 public:
     LEDControl(); // can't have any arguments in constructor, because QML needs to be able to initialise it
+    ~LEDControl();
 
     // property for allowing QML to read/write/track whether the flashlight is on
     Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged);
 
     // path to the control file
-    //Q_PROPERTY(QVariant controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
     Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
 
 public slots:
@@ -55,16 +55,12 @@ public slots:
     void setOnBool(bool);
 
     // methods for reading/writing control file path
-    //QVariant getPath();
-    //Q_INVOKABLE void setPath(QVariant fp);
     QString getPath();
     Q_INVOKABLE void setPath(QString fp);
-
-    Q_INVOKABLE QString detectPath();
+    Q_INVOKABLE void detectPath();
 
 signals:
     void isOnBoolChanged(bool);
-    //void controlFilePathChanged(QVariant);
     void controlFilePathChanged(QString);
 
 private:
