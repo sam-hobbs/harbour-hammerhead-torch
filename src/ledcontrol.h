@@ -48,28 +48,37 @@ public:
     // path to the control file
     Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
 
+    // detected device name
+    Q_PROPERTY(QString device READ getDevice WRITE setDevice NOTIFY deviceChanged);
+
 public slots:
     // methods for reading/writing flashlight state
-    bool isOn();
+    Q_INVOKABLE bool isOn();
     Q_INVOKABLE bool toggleState();
     void setOnBool(bool);
 
-    // methods for reading/writing control file path
-    QString getPath();
-    Q_INVOKABLE void setPath(QString fp);
+    // methods for reading and detecting control file path
+    Q_INVOKABLE QString getPath();
     Q_INVOKABLE void detectPath();
+
+    // method for reading detected device name
+    Q_INVOKABLE QString getDevice();
 
 signals:
     void isOnBoolChanged(bool);
     void controlFilePathChanged(QString);
+    void deviceChanged(QString);
 
 private:
     bool checkFile();
+    void setPath(QString fp);
+    void setDevice(QString name);
 
     QFile file;
     bool m_isOn;
     QString controlFilePath;
     QSettings *settings;
+    QString m_device;
 };
 
 #endif // LED_CONTROL_H

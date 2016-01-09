@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# makefile
+Makefile
+
+# project file
+*.pro.user

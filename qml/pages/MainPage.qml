@@ -28,7 +28,7 @@ import uk.co.samhobbs 0.1
 Page {
     id: page
 
-    // PullDownMenu requires page to be flickable
+    // PullDownMenu must be inside flickable element
     SilicaFlickable {
         anchors.fill: parent
 
@@ -43,25 +43,27 @@ Page {
             }
         }
 
-        Column {
-            id: column
-            width: parent.width
-
-            PageHeader {
-                title: qsTr("Hammerhead Torch")
-            }
+        PageHeader {
+            id: header
+            title: qsTr("Hammerhead Torch")
         }
 
         IconButton {
             id:button
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            anchors {
+                top: header.bottom
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.right
+            }
+
             width: parent.width
 
             icon.source: ( led.on ) ? "qrc:///hammerhead-inverted" : "qrc:///hammerhead"
 
             icon.width: parent.width
+            icon.height: parent.height - header.height
             icon.fillMode: Image.PreserveAspectFit
 
             onClicked:
@@ -69,12 +71,8 @@ Page {
                 console.log("clicked!")
                 led.toggleState()
             }
-
-
         }
-
     }
-
 }
 
 

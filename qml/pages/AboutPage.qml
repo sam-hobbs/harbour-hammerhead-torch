@@ -26,101 +26,127 @@ import Sailfish.Silica 1.0
 
 Page {
     objectName: "AboutPage"
-    Column {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: Theme.paddingMedium
-        anchors.rightMargin: Theme.paddingMedium
-        PageHeader {
-            title: qsTr("About Hammerhead Torch")
-        }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
-        }
-        Image {
-            width: parent.width / 2
-            height: parent.width / 3
-            anchors.horizontalCenter: parent.horizontalCenter
-            source: "qrc:///hammerhead-inverted"
-            smooth: true
-            asynchronous: true
-        }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
-        }
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeMedium
-            color: Theme.primaryColor
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            text: qsTr("A simple torch app for the LG Nexus 5, Jolla phone and more")
-        }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
+    PageHeader {
+        id: header
+        title: qsTr("About Hammerhead Torch")
+    }
+
+    SilicaFlickable {
+        id: flickable
+
+        anchors {
+            top: header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
         }
 
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryColor
-            text: "Copyright © 2016 Sam Hobbs"
-        }
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryColor
-            text: "(Feathers McGraw)"
-        }
-        Item {
-            width: 1
-            height: 2 * Theme.paddingLarge
-        }
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.secondaryColor
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            text: qsTr("Hammerhead torch is open source software licensed under the terms of the GNU General Public License v3+ ")
-        }
-        Item {
-            width: 1
-            height: 2 * Theme.paddingLarge
-        }
+        contentHeight: content.height
 
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("License")
-            onClicked: {
-                pageStack.push(Qt.openUrlExternally("http://www.gnu.org/licenses/gpl.html"));
+        Column {
+            id: content
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Theme.paddingMedium
+            anchors.rightMargin: Theme.paddingMedium
+
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+            Image {
+                width: parent.width / 2
+                height: parent.width / 3
+                anchors.horizontalCenter: parent.horizontalCenter
+                source: "qrc:///hammerhead-inverted"
+                smooth: true
+                asynchronous: true
+            }
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeMedium
+                color: Theme.primaryColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: qsTr("A simple torch app for the LG Nexus 5, Jolla phone and more")
+            }
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: "Copyright © 2016 Sam Hobbs"
+            }
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: "(Feathers McGraw)"
+            }
+            Item {
+                width: 1
+                height: 2 * Theme.paddingLarge
+            }
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.secondaryColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: qsTr("Hammerhead torch is open source software licensed under the terms of the GNU General Public License v3+ ")
+            }
+            Item {
+                width: 1
+                height: 2 * Theme.paddingLarge
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("License")
+                onClicked: {
+                    pageStack.push(Qt.openUrlExternally("http://www.gnu.org/licenses/gpl.html"));
+                }
+            }
+
+            Item {
+                width: 1
+                height: 2 * Theme.paddingLarge
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Source")
+                onClicked: {
+                    pageStack.push(Qt.openUrlExternally("https://github.com/sam-hobbs/harbour-hammerhead-torch"));
+                }
+            }
+
+            Item {
+                width: 1
+                height: 2 * Theme.paddingLarge
+            }
+
+            Label {
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.bottom: parent.bottom
+                //anchors.bottomMargin: Theme.paddingSmall
+                color: Theme.secondaryColor
+                font.pixelSize: Theme.fontSizeTiny
+                text: "v0.6"
             }
         }
 
-        Item {
-            width: 1
-            height: 2 * Theme.paddingLarge
-        }
+        VerticalScrollDecorator{}
+    }
 
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("Source")
-            onClicked: {
-                pageStack.push(Qt.openUrlExternally("https://github.com/sam-hobbs/harbour-hammerhead-torch"));
-            }
-        }
-    }
-    Label {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Theme.paddingSmall
-        color: Theme.secondaryColor
-        font.pixelSize: Theme.fontSizeTiny
-        text: "v0.5"
-    }
 }

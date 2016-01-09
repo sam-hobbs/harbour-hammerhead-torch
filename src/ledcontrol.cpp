@@ -46,9 +46,10 @@ LEDControl::LEDControl() {
     // on Jolla phone it is /sys/kernel/debug/flash_adp1650/mode
     // check for path stored in app settings
 
-    if( settings->contains("controlFilePath") )
+    if( settings->contains("controlFilePath") && settings->contains("device") )
     {
-        setPath(settings->value("controlFilePath",QString("")).toString());
+        setPath( settings->value( "controlFilePath", QString("") ).toString() );
+        setDevice( settings->value( "device", QString("") ).toString() );
     }
     else
     {
@@ -73,6 +74,21 @@ LEDControl::~LEDControl() {
         toggleState();
 }
 
+QString LEDControl::getDevice()
+{
+    return m_device;
+}
+
+void LEDControl::setDevice(QString name)
+{
+    qDebug() << "Detected " << name;
+    m_device = name;
+    emit deviceChanged(m_device);
+
+    // store the new device name in settings
+    settings->setValue("device",m_device);
+}
+
 void LEDControl::detectPath()
 {
     qDebug() << "detectPath called";
@@ -83,7 +99,7 @@ void LEDControl::detectPath()
     file.refresh();
     if (file.exists())
     {
-        qDebug() << "Detected Hammerhead";
+        setDevice("LG Nexus 5 (Hammerhead)");
         setPath( file.canonicalFilePath() );
     }
     else
@@ -93,12 +109,13 @@ void LEDControl::detectPath()
         file.refresh();
         if (file.exists())
         {
-            qDebug() << "Detected Jolla phone";
+            setDevice("Jolla Phone");
             setPath( file.canonicalFilePath() );
         }
         else
         {
             // if we get to here and haven't found the path, filepath is unknown. use test file
+            setDevice("Unknown");
             setPath("/home/nemo/hammerhead-torch-test.txt");
         }
     }
@@ -176,22 +193,6 @@ bool LEDControl::toggleState()
         // turn on
         data = QString::number(1);
     }
-
-//    // close and open again with different properties
-//    if ( file.isOpen() )
-//        file.close();
-
-//    // if the file can't be opened RW, error
-//    if ( !file.open(QFile::WriteOnly | QFile::Truncate | QIODevice::Text) )
-//    {
-//        qCritical() << "can't open file with read write permissions";
-//        return 1;
-//    }
-
-//    // make a textstream of the file and write the new data to it
-//    QTextStream out(&file);
-//    out << data << "\n";
-//    file.close();
 
     QProcess shell;
     QString command;

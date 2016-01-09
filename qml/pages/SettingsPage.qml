@@ -28,81 +28,115 @@ import uk.co.samhobbs 0.1
 Page {
     objectName: "SettingsPage"
 
-    Column {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: Theme.paddingMedium
-        anchors.rightMargin: Theme.paddingMedium
-        PageHeader {
-            title: qsTr("Settings")
+    PageHeader {
+        id: header
+        title: qsTr("Settings")
+    }
+
+    SilicaFlickable {
+        id: flickable
+
+        anchors {
+            top: header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
         }
 
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeMedium
-            color: Theme.primaryColor
-            text: qsTr("Detect or set control file path")
-        }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
-        }
+        contentHeight: content.height
 
-        Label {
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryColor
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            text: "The control file is a file on the system that controls the flashlight. It is in a different place on different phones, you can specify a location manually or set one using the text box below"
-        }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
-        }
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("Detect path")
-            onClicked: {
-                console.log("clicked!")
-                led.detectPath()
-                console.log("current value of controlFile is " + led.controlFile)
+        Column {
+            id: content
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Theme.paddingMedium
+            anchors.rightMargin: Theme.paddingMedium
+
+
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeMedium
+                color: Theme.primaryColor
+                text: qsTr("Control file settings")
+            }
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "This page shows the path to the control file, which controls the state of the camera flash LED. This should be auto-detected; the current settings are shown below."
+            }
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+            DetailItem {
+                label: "Device"
+                value: led.device
+            }
+
+            DetailItem {
+                label: "Control file"
+                value: led.controlFile
+            }
+
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Detect path")
+                onClicked: {
+                    console.log("clicked!")
+                    led.detectPath()
+                    console.log("current value of controlFile is " + led.controlFile)
+                }
+            }
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "If your phone shows up as \"Unknown\" you can manually edit the configuration file at ~/.config/harbour-hammerhead-torch/harbour-hammerhead-torch.conf and specify the device name and path to the control file."
+            }
+
+            Item {
+                width: 1
+                height: Theme.paddingLarge
+            }
+
+            Label {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "If your control file is not auto-detected please let me know so I can add support for your hardware."
+            }
+
+            Item {
+                width: 1
+                height: 2 * Theme.paddingLarge
             }
         }
-        Item {
-            width: 1
-            height: Theme.paddingLarge
-        }
 
-        TextField {
-            focus: true
-            inputMethodHints: Qt.ImhNoAutoUppercase
-            softwareInputPanelEnabled: true
-            width: parent.width
-            font.pixelSize: Theme.fontSizeExtraSmall
-
-            text: led.controlFile
-            color: Theme.secondaryColor
-
-            //placeholderText: led.controlFile
-            //placeholderColor: Theme.secondaryColor
-
-            // text displayed below textfield
-            label: "enter a new path and press return"
-
-            EnterKey.enabled: text != led.controlFile
-            EnterKey.iconSource: "image://theme/icon-m-enter-next"
-            EnterKey.onClicked: {
-                console.log("clicked!")
-                led.controlFile = text
-            }
-        }
-
-
-        Item {
-            width: 1
-            height: 2 * Theme.paddingLarge
-        }
+        VerticalScrollDecorator {flickable: flickable}
     }
 }
