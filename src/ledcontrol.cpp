@@ -92,6 +92,16 @@ void LEDControl::setDevice(QString name)
 void LEDControl::detectPath()
 {
     qDebug() << "detectPath called";
+
+    QSettings hwFile("/etc/hw-release", QSettings::IniFormat);
+    QString name = hwFile.value("NAME").toString();
+    qDebug() << "hw-release, name: " << name;
+    if (name == "Motorola Photon Q") {
+        setDevice(name);
+        setPath("/sys/class/leds/torch-flash/flash_light"); // write to brightness cause hang and reboot
+        return;
+    }
+
     QFileInfo file;
 
     // try Hammerhead control file location
