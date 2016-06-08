@@ -20,7 +20,7 @@ OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     translations/*.ts \
     harbour-hammerhead-torch.desktop
 
-SAILFISHAPP_ICONS = 86x86
+SAILFISHAPP_ICONS = 86x86 108x108 128x128 256x256
 
 # to disable building translations every time, comment out the following CONFIG line
 #CONFIG += sailfishapp_i18n

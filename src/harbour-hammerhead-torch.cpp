@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
     QScopedPointer<QQuickView> v(SailfishApp::createView());
 
-    qmlRegisterType<LEDControl>("uk.co.samhobbs", 0, 1, "LEDControl");
+    qmlRegisterType<LEDControl>("harbour.hammerhead.torch", 0, 1, "LEDControl");
 
     // Start the application.
     v->setSource(SailfishApp::pathTo("qml/harbour-hammerhead-torch.qml"));

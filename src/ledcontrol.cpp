@@ -126,7 +126,7 @@ void LEDControl::detectPath()
         {
             // if we get to here and haven't found the path, filepath is unknown. use test file
             setDevice("Unknown");
-            setPath("/home/nemo/hammerhead-torch-test.txt");
+            setPath("$HOME/hammerhead-torch-test.txt");
         }
     }
 }

@@ -142,7 +142,7 @@ Page {
                 //anchors.bottomMargin: Theme.paddingSmall
                 color: Theme.secondaryColor
                 font.pixelSize: Theme.fontSizeTiny
-                text: "v0.6"
+                text: "v0.7"
             }
         }
 
