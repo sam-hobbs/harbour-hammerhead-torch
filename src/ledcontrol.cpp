@@ -26,10 +26,10 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QTextStream>
 #include <QString>
 #include <QDebug>
-#include <QFileInfo>
 #include <QSettings>
 #include <QVariant>
 #include <QProcess>
+#include <QStandardPaths>
 
 #include "ledcontrol.h"
 #include "sailfishapp.h"
@@ -81,7 +81,7 @@ QString LEDControl::getDevice()
 
 void LEDControl::setDevice(QString name)
 {
-    qDebug() << "Detected " << name;
+    qDebug() << "Storing device name " << name;
     m_device = name;
     emit deviceChanged(m_device);
 
@@ -93,42 +93,26 @@ void LEDControl::detectPath()
 {
     qDebug() << "detectPath called";
 
+    // get the name of this hardware from the /etc/hw-release file
     QSettings hwFile("/etc/hw-release", QSettings::IniFormat);
     QString name = hwFile.value("NAME").toString();
-    qDebug() << "hw-release, name: " << name;
-    if (name == "Motorola Photon Q") {
-        setDevice(name);
-        setPath("/sys/class/leds/torch-flash/flash_light"); // write to brightness cause hang and reboot
-        return;
+    qDebug() << "Name detected from /etc/hw-release is: " << name;
+
+    // Use the name from /etc/hw-release to look up the control file location in controlfile.conf
+    QSettings controlFileSettings("/usr/share/harbour-hammerhead-torch/controlfile.conf",QSettings::IniFormat);
+
+    // Difficult to replace /usr/share/ with a variable, because QStandardPaths doesn't support an option that resolves to /usr/share/<APPNAME> yet
+    //qDebug() << QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation); //QStandardPaths::AppDataLocation and QStandardPaths::AppLocalDataLocation added in Qt 5.4
+
+    if ( controlFileSettings.contains(name) ) {
+        setDevice( name );
+        setPath( controlFileSettings.value(name).toString() );
+    } else {
+        qDebug() << "Hardware not recognised";
+        setDevice("Unknown");
+        setPath("$HOME/hammerhead-torch-test.txt");
     }
 
-    QFileInfo file;
-
-    // try Hammerhead control file location
-    file.setFile("/sys/class/leds/led:flash_torch/brightness");
-    file.refresh();
-    if (file.exists())
-    {
-        setDevice("LG Nexus 5 (Hammerhead)");
-        setPath( file.canonicalFilePath() );
-    }
-    else
-    {
-        // try Jolla phone file location
-        file.setFile("/sys/kernel/debug/flash_adp1650/mode");
-        file.refresh();
-        if (file.exists())
-        {
-            setDevice("Jolla Phone");
-            setPath( file.canonicalFilePath() );
-        }
-        else
-        {
-            // if we get to here and haven't found the path, filepath is unknown. use test file
-            setDevice("Unknown");
-            setPath("$HOME/hammerhead-torch-test.txt");
-        }
-    }
 }
 
 
@@ -141,17 +125,17 @@ QString LEDControl::getPath()
 
 void LEDControl::setPath(QString fp)
 {
-    qDebug() << "setPath called, value is " << fp;
+    qDebug() << "Storing filepath " << fp;
 
     if (fp == file.fileName())
     {
-        qDebug() << "setPath called but path has not changed, doing nothing";
+        qDebug() << "filepath has not changed, doing nothing";
         return;
     }
 
     if (fp.isEmpty())
     {
-        qCritical() << "Filepath is empty";
+        qCritical() << "Filepath is empty, doing nothing";
         return;
     }
 

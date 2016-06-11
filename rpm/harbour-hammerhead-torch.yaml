@@ -1,11 +1,11 @@
 Name: harbour-hammerhead-torch
 Summary: Torch application for the LG Nexus 5 ("Hammerhead") port of SailfishOS, Jolla and more.
-Version: 0.7
+Version: 0.8
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
 Group: Qt/Qt
-URL: http://example.org/
+URL: https://samhobbs.co.uk
 License: GPLv3+
 # This must be generated before uploading a package to a remote build service.
 # Usually this line does not need to be modified.
@@ -34,12 +34,15 @@ PkgConfigBR:
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
 
-# All installed files
+# List the files in the buildroot that should be included in the RPM
 Files:
   - '%{_bindir}'
   - '%{_datadir}/%{name}'
   - '%{_datadir}/applications/%{name}.desktop'
   - '%{_datadir}/icons/hicolor/*/apps/%{name}.png'
+# control file is installed at /usr/share/harbour-hammerhead-torch/controlfile.conf, not in /etc/ because it will be updated with new versions
+#  - '%{_sysconfdir}/%{name}/controlfile.conf' # <- could be used if the file was in /etc/, see http://www.rpm.org/wiki/PackagerDocs/Macros#MacroAnaloguesofAutoconfVariables
+# No extra line required because the whole of /usr/share/harbour-hammerhead-torch is already moved by the second line (  - '%{_datadir}/%{name}')
 
 # For more information about yaml and what's supported in Sailfish OS
 # build system, please see https://wiki.merproject.org/wiki/Spectacle

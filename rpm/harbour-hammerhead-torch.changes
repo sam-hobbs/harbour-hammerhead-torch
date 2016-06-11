@@ -8,6 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat Jun 11 2016 Sam Hobbs  <sam@samhobbs.co.uk> 0.8-1
+- Update to version 0.8
+- rewrote hardware detection method to use name from /etc/hw-release
+- fixes device name detection for Fairphone 2
+- support for new devices can be added with one line in controlfile.conf
+
 * Tue Jun 07 2016 Sam Hobbs  <sam@samhobbs.co.uk> 0.7-1
 - Update to version 0.7
 - added support for Motorola Photon Q (thanks elros34!)

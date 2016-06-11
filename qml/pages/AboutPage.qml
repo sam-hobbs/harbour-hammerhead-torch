@@ -72,7 +72,7 @@ Page {
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: qsTr("A simple torch app for the LG Nexus 5, Jolla phone and more")
+                text: qsTr("A simple torch app for the LG Nexus 5 and other SFOS ports")
             }
             Item {
                 width: 1
@@ -142,7 +142,7 @@ Page {
                 //anchors.bottomMargin: Theme.paddingSmall
                 color: Theme.secondaryColor
                 font.pixelSize: Theme.fontSizeTiny
-                text: "v0.7"
+                text: "v0.8"
             }
         }
 
