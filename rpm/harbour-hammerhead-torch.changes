@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Tue Jun 14 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.9-1
+- Update to version 0.9
+- Fixed possible execution of arbitrary commands
+
 * Sat Jun 11 2016 Sam Hobbs  <sam@samhobbs.co.uk> 0.8-1
 - Update to version 0.8
 - rewrote hardware detection method to use name from /etc/hw-release
