@@ -28,7 +28,6 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QDebug>
 #include <QSettings>
 #include <QVariant>
-#include <QProcess>
 #include <QStandardPaths>
 
 #include "ledcontrol.h"
@@ -188,15 +187,28 @@ bool LEDControl::toggleState()
         data = QString::number(1);
     }
 
-    QProcess shell;
-    QString command;
-    command = "echo " + data + " > " + file.fileName();
-    qDebug() << "command to be executed in shell: " << command;
-    shell.start("sh", QStringList() << "-c" << command );
-    shell.waitForFinished();
+    if ( !file.exists() )
+    {
+        qDebug() << "file does not exist";
+        return 1;
+    }
+
+    QFile ledFile(file.fileName());
+
+    if ( !ledFile.open(QFile::WriteOnly) )
+    {
+        qDebug() << "can not open file";
+        return 1;
+    }
+
+    QTextStream stream(&ledFile);
+    stream << data;
+    stream.flush();
+    QTextStream::Status status = stream.status();
+    ledFile.close();
 
     // check that the write succeeded before changing the state of led boolean
-    if ( shell.exitStatus() )
+    if ( status != QTextStream::Ok )
     {
         qDebug() << "error writing to file";
         return 1;
