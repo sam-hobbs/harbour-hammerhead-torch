@@ -45,6 +45,8 @@ LEDControl::LEDControl() {
     // on Jolla phone it is /sys/kernel/debug/flash_adp1650/mode
     // check for path stored in app settings
 
+    m_isValid = false;
+
     if( settings->contains("controlFilePath") && settings->contains("device") )
     {
         setPath( settings->value( "controlFilePath", QString("") ).toString() );
@@ -138,6 +140,21 @@ void LEDControl::setPath(QString fp)
         return;
     }
 
+    // check for valid file path
+    QRegExp regex("/sys/.*");
+
+    m_isValid = true;
+
+    if ( !regex.exactMatch(fp) )
+    {
+        qDebug() << "validation of file path failed - setting to INVALID";
+        if( !fp.startsWith("INVALID - "))
+        {
+            fp = QString("INVALID - %1").arg(fp);
+        }
+        m_isValid = false;
+    }
+
     // close the file
     file.close();
 
@@ -155,6 +172,9 @@ void LEDControl::setPath(QString fp)
 
 bool LEDControl::checkFile()
 {
+    if ( !m_isValid )
+        return false;
+
     // if the file is not readable, open it read only
     if ( file.isOpen() )
         file.close();
@@ -174,6 +194,8 @@ bool LEDControl::checkFile()
 
 bool LEDControl::toggleState()
 {
+    if ( !m_isValid )
+        return 1;
 
     QString data;
     if ( m_isOn )
@@ -229,4 +251,9 @@ void LEDControl::setOnBool(bool onBool)
 {
     m_isOn = onBool;
     emit isOnBoolChanged(m_isOn);
+}
+
+bool LEDControl::isValidPath()
+{
+    return m_isValid;
 }

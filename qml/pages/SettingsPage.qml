@@ -88,6 +88,15 @@ Page {
                 value: led.controlFile
             }
 
+            Label {
+                visible: !led.validPath
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSizeLarge
+                color: Theme.highlightColor
+                text: "Invalid control file path"
+            }
+
             Item {
                 width: 1
                 height: Theme.paddingLarge

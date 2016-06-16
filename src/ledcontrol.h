@@ -45,6 +45,9 @@ public:
     // property for allowing QML to read/write/track whether the flashlight is on
     Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged);
 
+    // property for checking for a valid path from QML
+    Q_PROPERTY(bool validPath READ isValidPath NOTIFY isValidPathChanged);
+
     // path to the control file
     Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
 
@@ -57,6 +60,9 @@ public slots:
     Q_INVOKABLE bool toggleState();
     void setOnBool(bool);
 
+    // methods reading valid path
+    bool isValidPath();
+
     // methods for reading and detecting control file path
     Q_INVOKABLE QString getPath();
     Q_INVOKABLE void detectPath();
@@ -68,6 +74,7 @@ signals:
     void isOnBoolChanged(bool);
     void controlFilePathChanged(QString);
     void deviceChanged(QString);
+    void isValidPathChanged(bool);
 
 private:
     bool checkFile();
@@ -76,6 +83,7 @@ private:
 
     QFile file;
     bool m_isOn;
+    bool m_isValid;
     QString controlFilePath;
     QSettings *settings;
     QString m_device;
