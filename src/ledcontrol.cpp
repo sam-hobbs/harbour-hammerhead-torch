@@ -148,6 +148,8 @@ void LEDControl::setPath(QString fp)
         m_isValid = false;
     }
 
+    emit isValidPathChanged(m_isValid);
+
     // close the file
     file.close();
 
