@@ -32,3 +32,6 @@ Makefile
 
 # project file
 *.pro.user
+
+# temporary files
+*.autosave

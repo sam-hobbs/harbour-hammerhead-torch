@@ -111,7 +111,7 @@ void LEDControl::detectPath()
     } else {
         qDebug() << "Hardware not recognised";
         setDevice("Unknown");
-        setPath("$HOME/hammerhead-torch-test.txt");
+        setPath("");
     }
 
 }
@@ -131,12 +131,6 @@ void LEDControl::setPath(QString fp)
     if (fp == file.fileName())
     {
         qDebug() << "filepath has not changed, doing nothing";
-        return;
-    }
-
-    if (fp.isEmpty())
-    {
-        qCritical() << "Filepath is empty, doing nothing";
         return;
     }
 
@@ -206,7 +200,13 @@ bool LEDControl::toggleState()
     else
     {
         // turn on
-        data = QString::number(1);
+        // hack for Jolla C - number in file determines brightness of torch, 255 is full brightness but drops to 1 after about a second. 127 is same as camera video recording and holds steady. Other devices won't allow a value other than 1 or 0
+        if ( settings->value( "device", QString("") ).toString() == QString("Intex Aqua Fish") )
+        {
+            data = QString::number(127);
+        } else {
+            data = QString::number(1);
+        }
     }
 
     if ( !file.exists() )
