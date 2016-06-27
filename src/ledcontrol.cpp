@@ -111,9 +111,8 @@ void LEDControl::detectPath()
     } else {
         qDebug() << "Hardware not recognised";
         setDevice("Unknown");
-        setPath("");
+        setPath("Unknown");
     }
-
 }
 
 
@@ -141,13 +140,15 @@ void LEDControl::setPath(QString fp)
 
     if ( !regex.exactMatch(fp) )
     {
-        qDebug() << "validation of file path failed - setting to INVALID";
-        if( !fp.startsWith("INVALID - "))
+        qDebug() << "validation of file path failed";
+        if( !fp.startsWith("INVALID - ") && fp != "Unknown")
         {
             fp = QString("INVALID - %1").arg(fp);
         }
         m_isValid = false;
     }
+
+    emit isValidPathChanged(m_isValid);
 
     // close the file
     file.close();
