@@ -88,6 +88,11 @@ Page {
                 value: led.controlFile
             }
 
+            DetailItem {
+                label: "Max brightness"
+                value: led.brightness
+            }
+
             Label {
                 visible: !led.validPath
                 width: parent.width

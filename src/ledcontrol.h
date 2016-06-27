@@ -43,16 +43,19 @@ public:
     ~LEDControl();
 
     // property for allowing QML to read/write/track whether the flashlight is on
-    Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged);
+    Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged)
 
     // property for checking for a valid path from QML
-    Q_PROPERTY(bool validPath READ isValidPath NOTIFY isValidPathChanged);
+    Q_PROPERTY(bool validPath READ isValidPath NOTIFY isValidPathChanged)
 
     // path to the control file
-    Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged);
+    Q_PROPERTY(QString controlFile READ getPath WRITE setPath NOTIFY controlFilePathChanged)
 
     // detected device name
-    Q_PROPERTY(QString device READ getDevice WRITE setDevice NOTIFY deviceChanged);
+    Q_PROPERTY(QString device READ getDevice WRITE setDevice NOTIFY deviceChanged)
+
+    // brightness to write to file
+    Q_PROPERTY(QString brightness READ getBrightness WRITE setBrightness NOTIFY brightnessChanged)
 
 public slots:
     // methods for reading/writing flashlight state
@@ -70,23 +73,29 @@ public slots:
     // method for reading detected device name
     Q_INVOKABLE QString getDevice();
 
+    // method for reading brightness
+    Q_INVOKABLE QString getBrightness();
+
 signals:
     void isOnBoolChanged(bool);
     void controlFilePathChanged(QString);
     void deviceChanged(QString);
     void isValidPathChanged(bool);
+    void brightnessChanged(QString);
 
 private:
     bool checkFile();
     void setPath(QString fp);
     void setDevice(QString name);
+    void setBrightness(QString brightness);
 
     QFile file;
     bool m_isOn;
     bool m_isValid;
     QString controlFilePath;
-    QSettings *settings;
+    QSettings *applicationSettings;
     QString m_device;
+    QString m_brightness;
 };
 
 #endif // LED_CONTROL_H

@@ -35,8 +35,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 
 LEDControl::LEDControl() {
     // initialise settings object
-    //settings = new QSettings("Feathers_McGraw","harbour-hammerhead-torch");
-    settings = new QSettings(); // application name defaults to binary name
+    applicationSettings = new QSettings(); // application name defaults to binary name
 
     // set the path of the control file that turns the flashlight on / off
     QString filePath;
@@ -47,10 +46,11 @@ LEDControl::LEDControl() {
 
     m_isValid = false;
 
-    if( settings->contains("controlFilePath") && settings->contains("device") )
+    if( applicationSettings->contains("controlFilePath") && applicationSettings->contains("device") && applicationSettings->contains("brightness") )
     {
-        setPath( settings->value( "controlFilePath", QString("") ).toString() );
-        setDevice( settings->value( "device", QString("") ).toString() );
+        setPath( applicationSettings->value( "controlFilePath", QString("") ).toString() );
+        setDevice( applicationSettings->value( "device", QString("") ).toString() );
+        setBrightness( applicationSettings->value( "brightness", QString::number(1) ).toString() );
     }
     else
     {
@@ -87,7 +87,7 @@ void LEDControl::setDevice(QString name)
     emit deviceChanged(m_device);
 
     // store the new device name in settings
-    settings->setValue("device",m_device);
+    applicationSettings->setValue("device",m_device);
 }
 
 void LEDControl::detectPath()
@@ -113,6 +113,16 @@ void LEDControl::detectPath()
         setDevice("Unknown");
         setPath("Unknown");
     }
+
+    // Use the name from /etc/hw-release to look up the brightness in brightness.conf
+    QSettings brightnessSettings("/usr/share/harbour-hammerhead-torch/brightness.conf",QSettings::IniFormat);
+
+    if ( brightnessSettings.contains(name) ) {
+        setBrightness( brightnessSettings.value(name).toString() );
+    } else {
+        setBrightness(QString::number(1));
+    }
+
 }
 
 
@@ -161,7 +171,7 @@ void LEDControl::setPath(QString fp)
     file.setFileName(fp);
 
     // store the new fp in settings
-    settings->setValue("controlFilePath",fp);
+    applicationSettings->setValue("controlFilePath",fp);
 
 }
 
@@ -201,13 +211,7 @@ bool LEDControl::toggleState()
     else
     {
         // turn on
-        // hack for Jolla C - number in file determines brightness of torch, 255 is full brightness but drops to 1 after about a second. 127 is same as camera video recording and holds steady. Other devices won't allow a value other than 1 or 0
-        if ( settings->value( "device", QString("") ).toString() == QString("Intex Aqua Fish") )
-        {
-            data = QString::number(127);
-        } else {
-            data = QString::number(1);
-        }
+        data = getBrightness();
     }
 
     if ( !file.exists() )
@@ -257,4 +261,20 @@ void LEDControl::setOnBool(bool onBool)
 bool LEDControl::isValidPath()
 {
     return m_isValid;
+}
+
+QString LEDControl::getBrightness()
+{
+    qDebug() << "getBrightness called, current value is " << m_brightness;
+    return m_brightness;
+}
+
+void LEDControl::setBrightness(QString brightness)
+{
+    qDebug() << "Setting brightness to " << brightness;
+    m_brightness = brightness;
+    emit brightnessChanged(m_brightness);
+
+    // store the new brightness in settings
+    applicationSettings->setValue("brightness",m_brightness);
 }

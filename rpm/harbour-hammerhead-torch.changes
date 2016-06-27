@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Mon Jun 27 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.11-1
+- Update to version 0.11
+- Minor tweaks to control file path validation
+- Implemented support for phones with variable brightness via brightness.conf
+
 * Sat Jun 25 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.10-1
 - Update to version 0.10
 - More validation on control file path (thanks Top-Ranger)

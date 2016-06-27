@@ -25,7 +25,8 @@ OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     rpm/harbour-hammerhead-torch.changes \
     translations/*.ts \
     harbour-hammerhead-torch.desktop \
-    controlfile.conf
+    controlfile.conf \
+    brightness.conf
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 256x256
 
