@@ -2,6 +2,8 @@ TARGET = harbour-hammerhead-torch
 
 CONFIG += sailfishapp
 
+PKGCONFIG += gstreamer-1.0
+
 # add configuration file to the package. If the configuration file is in a subdir, it doesn't get detected
 configuration.files = controlfile.conf
 #configuration.path = /etc/$${TARGET}
@@ -19,6 +21,7 @@ OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     qml/pages/MainPage.qml \
     qml/pages/AboutPage.qml \
     qml/pages/SettingsPage.qml \
+    qml/pages/DoesGStreamerWorkDialog.qml \
     rpm/harbour-hammerhead-torch.changes.in \
     rpm/harbour-hammerhead-torch.spec \
     rpm/harbour-hammerhead-torch.yaml \
@@ -34,4 +37,4 @@ SAILFISHAPP_ICONS = 86x86 108x108 128x128 256x256
 #CONFIG += sailfishapp_i18n
 #TRANSLATIONS +=
 
-RESOURCES += harbour-hammerhead-torch.qrc
+RESOURCES += harbour-hammerhead-torch.qrc    

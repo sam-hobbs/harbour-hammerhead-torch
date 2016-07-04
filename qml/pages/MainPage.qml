@@ -73,6 +73,18 @@ Page {
             }
         }
     }
+
+
+    // if this is the first time the application has run, open a dialog to ask the user to set the torch method (gstreamer or controlfile)
+    property bool firstLoad: true
+    onStatusChanged: {
+        if (status == PageStatus.Active && firstLoad) {
+            firstLoad = false
+            if (!led.getGSTDialogCompleted()) {
+                pageStack.push(Qt.resolvedUrl("DoesGStreamerWorkDialog.qml"));
+            }
+        }
+    }
 }
 
 

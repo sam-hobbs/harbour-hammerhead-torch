@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Mon Jul 4 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.12-1
+- Update to version 0.12
+- Implemented GStreamer torch method, use controlfile as a fallback option
+
 * Mon Jun 27 2016 Sam Hobbs <sam@samhobbs.co.uk> 0.11-1
 - Update to version 0.11
 - Minor tweaks to control file path validation

@@ -29,22 +29,25 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QSettings>
 #include <QVariant>
 #include <QStandardPaths>
+#include <gst/gst.h>
 
 #include "ledcontrol.h"
 #include "sailfishapp.h"
 
-LEDControl::LEDControl() {
+LEDControl::LEDControl(QObject *parent) :
+    QObject(parent), m_isValid(false), pipeline(0), src(0), sink(0), m_gStreamerInitialised(false), m_useGStreamer(false) {
     // initialise settings object
     applicationSettings = new QSettings(); // application name defaults to binary name
 
-    // set the path of the control file that turns the flashlight on / off
-    QString filePath;
+    // check settings to determine whether to use gstreamer, default to true and ask the user to set it on first run
+    m_useGStreamer = applicationSettings->value("useGStreamer",true).toBool();
+
+    // initialise gstreamer pipeline
+    initGstreamerTorch();
 
     // on hammerhead the control file is /sys/class/leds/led\:flash_torch/brightness
     // on Jolla phone it is /sys/kernel/debug/flash_adp1650/mode
     // check for path stored in app settings
-
-    m_isValid = false;
 
     if( applicationSettings->contains("controlFilePath") && applicationSettings->contains("device") && applicationSettings->contains("brightness") )
     {
@@ -73,6 +76,8 @@ LEDControl::~LEDControl() {
     // turn the torch off when closing the app
     if( isOn() )
         toggleState();
+
+    releaseGstreamerTorch();
 }
 
 QString LEDControl::getDevice()
@@ -199,50 +204,62 @@ bool LEDControl::checkFile()
 
 bool LEDControl::toggleState()
 {
-    if ( !m_isValid )
-        return 1;
+    if (m_useGStreamer) {
+        if ( m_isOn ) {
+            // turn off
+            gst_element_set_state(pipeline, GST_STATE_NULL);
+            setOnBool(!m_isOn);
+        } else {
+            // turn on
+            gst_element_set_state(pipeline, GST_STATE_PLAYING);
+            setOnBool(!m_isOn);
+        }
+    } else {
+        if ( !m_isValid )
+            return 1;
 
-    QString data;
-    if ( m_isOn )
-    {
-        // turn off
-        data = QString::number(0);
+        QString data;
+        if ( m_isOn )
+        {
+            // turn off
+            data = QString::number(0);
+        }
+        else
+        {
+            // turn on
+            data = getBrightness();
+        }
+
+        if ( !file.exists() )
+        {
+            qDebug() << "file does not exist";
+            return 1;
+        }
+
+        QFile ledFile(file.fileName());
+
+        if ( !ledFile.open(QFile::WriteOnly) )
+        {
+            qDebug() << "can not open file";
+            return 1;
+        }
+
+        QTextStream stream(&ledFile);
+        stream << data;
+        stream.flush();
+        QTextStream::Status status = stream.status();
+        ledFile.close();
+
+        // check that the write succeeded before changing the state of led boolean
+        if ( status != QTextStream::Ok )
+        {
+            qDebug() << "error writing to file";
+            return 1;
+        }
+
+        // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
+        setOnBool(!m_isOn);
     }
-    else
-    {
-        // turn on
-        data = getBrightness();
-    }
-
-    if ( !file.exists() )
-    {
-        qDebug() << "file does not exist";
-        return 1;
-    }
-
-    QFile ledFile(file.fileName());
-
-    if ( !ledFile.open(QFile::WriteOnly) )
-    {
-        qDebug() << "can not open file";
-        return 1;
-    }
-
-    QTextStream stream(&ledFile);
-    stream << data;
-    stream.flush();
-    QTextStream::Status status = stream.status();
-    ledFile.close();
-
-    // check that the write succeeded before changing the state of led boolean
-    if ( status != QTextStream::Ok )
-    {
-        qDebug() << "error writing to file";
-        return 1;
-    }
-
-    // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
-    setOnBool(!m_isOn);
 
     return 0;
 }
@@ -277,4 +294,70 @@ void LEDControl::setBrightness(QString brightness)
 
     // store the new brightness in settings
     applicationSettings->setValue("brightness",m_brightness);
+}
+
+void LEDControl::initGstreamerTorch() {
+    qDebug() << "GStreamer torch initialising";
+    gst_init(NULL, NULL);
+    src = gst_element_factory_make("droidcamsrc", "src");
+    sink = gst_element_factory_make("droideglsink", "sink");
+    pipeline = gst_pipeline_new ("test-pipeline");
+    if (!src || !sink || !pipeline) {
+        return;
+    }
+    // Build the pipeline
+    gst_bin_add_many (GST_BIN (pipeline), src, sink, NULL);
+    if (gst_element_link (src, sink) != TRUE) {
+        qDebug() << "Elements could not be linked!";
+        gst_object_unref (pipeline);
+        return;
+    }
+    g_object_set(G_OBJECT(src), "video-torch", 1, NULL);
+    g_object_set(G_OBJECT(src), "mode", 2, NULL);
+    gst_element_set_state(pipeline, GST_STATE_NULL);
+
+    // if we get to here and haven't returned due to error, initialisation was successful
+    qDebug() << "gstreamer initialised successfully";
+    m_gStreamerInitialised = true;
+}
+
+
+void LEDControl::releaseGstreamerTorch() {
+    qDebug() << "releaseGStreamerTorch called";
+    if (m_gStreamerInitialised) {
+        qDebug() << "releasing gstreamer objects";
+        gst_element_set_state(pipeline, GST_STATE_NULL);
+        gst_object_unref (pipeline);
+    } else {
+        qDebug() << "gstreamer not initialised, no gstreamer objects to be released";
+    }
+}
+
+bool LEDControl::getUseGStreamer() {
+    qDebug() << "getUseGStreamer called, current value is: " << m_useGStreamer;
+    return m_useGStreamer;
+}
+
+void LEDControl::setUseGStreamer(bool gstreamer) {
+    qDebug() << "setUseGStreamer called, setting value to: " << gstreamer;
+
+    if (m_useGStreamer != gstreamer) {
+        // if torch is on, turn it off before changing the method
+        if (isOn() )
+            toggleState();
+        applicationSettings->setValue("useGStreamer",gstreamer);// store in settings
+        m_useGStreamer = gstreamer;
+    }
+}
+
+bool LEDControl::getGSTDialogCompleted() {
+
+    bool completed = applicationSettings->value("GSTDialogCompleted",false).toBool();
+    qDebug() << "getGSTDialogCompleted called, value is" << completed;
+    return completed;
+}
+
+void LEDControl::setGSTDialogCompleted() {
+    qDebug() << "setGSTDialogCompleted called";
+    applicationSettings->setValue("GSTDialogCompleted",true);
 }

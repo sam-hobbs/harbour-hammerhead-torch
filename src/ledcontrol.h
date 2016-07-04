@@ -31,6 +31,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 #include <QString>
 #include <QSettings>
 #include <QVariant>
+#include <gst/gstelement.h>
 
 #include "sailfishapp.h"
 
@@ -39,12 +40,13 @@ class LEDControl : public QObject
     Q_OBJECT
 
 public:
-    LEDControl(); // can't have any arguments in constructor, because QML needs to be able to initialise it
+    explicit LEDControl(QObject *parent = 0); // can't have any arguments in constructor, because QML needs to be able to initialise it
     ~LEDControl();
 
     // property for allowing QML to read/write/track whether the flashlight is on
     Q_PROPERTY(bool on READ isOn WRITE setOnBool NOTIFY isOnBoolChanged)
 
+    // === CONTROL FILE PROPERTIES ===
     // property for checking for a valid path from QML
     Q_PROPERTY(bool validPath READ isValidPath NOTIFY isValidPathChanged)
 
@@ -56,6 +58,12 @@ public:
 
     // brightness to write to file
     Q_PROPERTY(QString brightness READ getBrightness WRITE setBrightness NOTIFY brightnessChanged)
+
+    // determine whether to use gstreamer or fallback control file method
+    Q_PROPERTY(bool useGStreamer READ getUseGStreamer WRITE setUseGStreamer NOTIFY useGStreamerChanged)
+
+    // has the user completed the dialog asking if the gstreamer method works?
+    Q_PROPERTY(bool gstreamerDialogCompleted READ getGSTDialogCompleted)
 
 public slots:
     // methods for reading/writing flashlight state
@@ -76,18 +84,32 @@ public slots:
     // method for reading brightness
     Q_INVOKABLE QString getBrightness();
 
+    // methods for reading and writing whether to use GStreamer method
+    Q_INVOKABLE bool getUseGStreamer();
+    Q_INVOKABLE void setUseGStreamer(bool);
+
+    Q_INVOKABLE bool getGSTDialogCompleted();
+    Q_INVOKABLE void setGSTDialogCompleted();
+
 signals:
     void isOnBoolChanged(bool);
     void controlFilePathChanged(QString);
     void deviceChanged(QString);
     void isValidPathChanged(bool);
     void brightnessChanged(QString);
+    void useGStreamerChanged(bool);
+    void gstremerDialogCompletedChanged(bool);
 
 private:
     bool checkFile();
     void setPath(QString fp);
     void setDevice(QString name);
     void setBrightness(QString brightness);
+
+    // gstreamer methods
+    void initGstreamerTorch();
+    void releaseGstreamerTorch();
+
 
     QFile file;
     bool m_isOn;
@@ -96,6 +118,15 @@ private:
     QSettings *applicationSettings;
     QString m_device;
     QString m_brightness;
+
+    // gstreamer objects
+    GstElement *pipeline;
+    GstElement *src;
+    GstElement *sink;
+    bool m_gStreamerInitialised;
+    bool m_useGStreamer;
+
+
 };
 
 #endif // LED_CONTROL_H

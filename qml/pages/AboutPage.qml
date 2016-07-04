@@ -138,11 +138,9 @@ Page {
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                //anchors.bottom: parent.bottom
-                //anchors.bottomMargin: Theme.paddingSmall
                 color: Theme.secondaryColor
                 font.pixelSize: Theme.fontSizeTiny
-                text: "v0.11"
+                text: "v0.12"
             }
         }
 
