@@ -1,6 +1,10 @@
 # Hammerhead Torch
 A simple torch app, originally written for the LG Nexus 5 (codename "hammerhead") port of Sailfish OS.
 
+This branch used qtmultimedia to control the torch by default, and falls back to the controlfile method if that doesn't work.
+
+The qtmultimedia method is currently not supported in Sailfish.
+
 Hammerhead Torch now automatically detects the following hardware:
 * Jolla A
 * LG Nexus 5 ("Hammerhead")

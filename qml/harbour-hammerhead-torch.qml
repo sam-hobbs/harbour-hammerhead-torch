@@ -24,6 +24,7 @@ along with Hammerhead Torch.  If not, see <http://www.gnu.org/licenses/>
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.hammerhead.torch 0.1
+import QtMultimedia 5.5
 import "pages"
 
 ApplicationWindow
@@ -41,6 +42,19 @@ ApplicationWindow
         device: led.getDevice()
         brightness: led.getBrightness();
     }
+
+    Camera {
+        id:camera
+        //flash.mode: Camera.FlashTorch
+        //flash.mode: ( led.on ) ? Camera.FlashTorch : Camera.FlashOff
+        flash.mode: ( led.qtMultimediaOn ) ? Camera.FlashTorch : Camera.FlashOff
+    }
+
+//    Torch {
+//        power: 100
+//        //enabled: true
+//        enabled: led.on
+//    }
 
 }
 

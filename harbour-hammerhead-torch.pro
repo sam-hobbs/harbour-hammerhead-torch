@@ -19,6 +19,7 @@ OTHER_FILES += qml/harbour-hammerhead-torch.qml \
     qml/pages/MainPage.qml \
     qml/pages/AboutPage.qml \
     qml/pages/SettingsPage.qml \
+    qml/pages/ChooseTechnologyDialog.qml \
     rpm/harbour-hammerhead-torch.changes.in \
     rpm/harbour-hammerhead-torch.spec \
     rpm/harbour-hammerhead-torch.yaml \

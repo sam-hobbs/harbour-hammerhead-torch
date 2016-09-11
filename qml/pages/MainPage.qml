@@ -73,6 +73,17 @@ Page {
             }
         }
     }
+
+    // if this is the first time the application has run, open a dialog to ask the user to set the torch method (qtmultimedia or controlfile)
+    property bool firstLoad: true
+    onStatusChanged: {
+        if (status == PageStatus.Active && firstLoad) {
+            firstLoad = false
+            if (!led.getTechnologyDialogCompleted()) {
+                pageStack.push(Qt.resolvedUrl("ChooseTechnologyDialog.qml"));
+            }
+        }
+    }
 }
 
 

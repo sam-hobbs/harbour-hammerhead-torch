@@ -37,8 +37,8 @@ LEDControl::LEDControl() {
     // initialise settings object
     applicationSettings = new QSettings(); // application name defaults to binary name
 
-    // set the path of the control file that turns the flashlight on / off
-    QString filePath;
+    // check settings to determine whether to use controlfile or qtmultimedia, default to use qtmultimedia and ask the user to choose technology on first run
+    m_useControlFile = applicationSettings->value("useControlFile",false).toBool();
 
     // on hammerhead the control file is /sys/class/leds/led\:flash_torch/brightness
     // on Jolla phone it is /sys/kernel/debug/flash_adp1650/mode
@@ -60,6 +60,7 @@ LEDControl::LEDControl() {
 
     // get initial file state
     m_isOn = checkFile();
+    m_qtMultimediaOn = false;
 
     // if light is not on, turn it on
     if (!m_isOn) {
@@ -199,51 +200,57 @@ bool LEDControl::checkFile()
 
 bool LEDControl::toggleState()
 {
-    if ( !m_isValid )
-        return 1;
+    // if the qtmultimedia method is used, we only need to change the m_isOn boolean and the torch state will be changed by the Camera object in qml
+    if (m_useControlFile) {
+        if ( !m_isValid )
+            return 1;
 
-    QString data;
-    if ( m_isOn )
-    {
-        // turn off
-        data = QString::number(0);
+        QString data;
+        if ( m_isOn )
+        {
+            // turn off
+            data = QString::number(0);
+        }
+        else
+        {
+            // turn on
+            data = getBrightness();
+        }
+
+        if ( !file.exists() )
+        {
+            qDebug() << "file does not exist";
+            return 1;
+        }
+
+        QFile ledFile(file.fileName());
+
+        if ( !ledFile.open(QFile::WriteOnly) )
+        {
+            qDebug() << "can not open file";
+            return 1;
+        }
+
+        QTextStream stream(&ledFile);
+        stream << data;
+        stream.flush();
+        QTextStream::Status status = stream.status();
+        ledFile.close();
+
+        // check that the write succeeded before changing the state of led boolean
+        if ( status != QTextStream::Ok )
+        {
+            qDebug() << "error writing to file";
+            return 1;
+        }
+
+        // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
+        setOnBool(!m_isOn);
+
+    } else {
+        setQtMultimediaOn(!m_isOn);
+        setOnBool(!m_isOn);
     }
-    else
-    {
-        // turn on
-        data = getBrightness();
-    }
-
-    if ( !file.exists() )
-    {
-        qDebug() << "file does not exist";
-        return 1;
-    }
-
-    QFile ledFile(file.fileName());
-
-    if ( !ledFile.open(QFile::WriteOnly) )
-    {
-        qDebug() << "can not open file";
-        return 1;
-    }
-
-    QTextStream stream(&ledFile);
-    stream << data;
-    stream.flush();
-    QTextStream::Status status = stream.status();
-    ledFile.close();
-
-    // check that the write succeeded before changing the state of led boolean
-    if ( status != QTextStream::Ok )
-    {
-        qDebug() << "error writing to file";
-        return 1;
-    }
-
-    // toggle the boolean using the setOnBool method, which will emit a signal and change the qml property
-    setOnBool(!m_isOn);
-
     return 0;
 }
 
@@ -277,4 +284,48 @@ void LEDControl::setBrightness(QString brightness)
 
     // store the new brightness in settings
     applicationSettings->setValue("brightness",m_brightness);
+}
+
+
+bool LEDControl::getUseControlFile() {
+    qDebug() << "getUseControlFile called, current value is: " << m_useControlFile;
+    return m_useControlFile;
+}
+
+void LEDControl::setUseControlFile(bool useControlFile) {
+    qDebug() << "setUseControlFile called, setting value to: " << useControlFile;
+
+    if (m_useControlFile != useControlFile) {
+        // if torch is on, turn it off before changing the method
+        if (isOn() )
+            toggleState();
+        applicationSettings->setValue("useControlFile",useControlFile);// store in settings
+        m_useControlFile = useControlFile;
+    }
+}
+
+bool LEDControl::getTechnologyDialogCompleted() {
+
+    bool completed = applicationSettings->value("technologyDialogCompleted",false).toBool();
+    qDebug() << "getTechnologyDialogCompleted called, value is" << completed;
+    return completed;
+}
+
+void LEDControl::setTechnologyDialogCompleted() {
+    qDebug() << "setTechnologyDialogCompleted called";
+    applicationSettings->setValue("technologyDialogCompleted",true);
+}
+
+
+bool LEDControl::isQtMultimediaOn() {
+    qDebug() << "isQtMultimediaOn called, current state is " << m_qtMultimediaOn;
+    return m_qtMultimediaOn;
+}
+
+void LEDControl::setQtMultimediaOn(bool state) {
+    qDebug() << "setQtMultimediaOn called, current state is " << m_qtMultimediaOn << ", setting state to " << state;
+    if (m_qtMultimediaOn != state) {
+        m_qtMultimediaOn = state;
+        emit qtMultimediaOnChanged(m_qtMultimediaOn);
+    }
 }

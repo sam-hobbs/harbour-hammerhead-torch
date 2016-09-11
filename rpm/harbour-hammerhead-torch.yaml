@@ -1,6 +1,6 @@
 Name: harbour-hammerhead-torch
 Summary: Torch application for the LG Nexus 5 ("Hammerhead") port of SailfishOS, Jolla and more.
-Version: 0.11
+Version: 0.13
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -27,12 +27,13 @@ PkgConfigBR:
   - Qt5Quick
 
 # Build dependencies without a pkgconfig setup can be listed here
-# PkgBR:
-#   - package-needed-to-build
+PkgBR:
+  - nemo-qml-plugin-policy-qt5
 
 # Runtime dependencies which are not automatically detected
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
+  - nemo-qml-plugin-policy-qt5
 
 # List the files in the buildroot that should be included in the RPM
 Files:

@@ -57,6 +57,15 @@ public:
     // brightness to write to file
     Q_PROPERTY(QString brightness READ getBrightness WRITE setBrightness NOTIFY brightnessChanged)
 
+    // determine whether to use qtmultimedia or fallback control file method
+    Q_PROPERTY(bool useControlFile READ getUseControlFile WRITE setUseControlFile NOTIFY useControlFileChanged)
+
+    // has the user completed the dialog asking if the qtmultimedia method works?
+    Q_PROPERTY(bool technologyDialogCompleted READ getTechnologyDialogCompleted)
+
+    // property for tracking whether the light is on using the qtmultimedia method
+    Q_PROPERTY(bool qtMultimediaOn READ isQtMultimediaOn WRITE setQtMultimediaOn NOTIFY qtMultimediaOnChanged)
+
 public slots:
     // methods for reading/writing flashlight state
     Q_INVOKABLE bool isOn();
@@ -76,12 +85,28 @@ public slots:
     // method for reading brightness
     Q_INVOKABLE QString getBrightness();
 
+
+    // methods for reading and writing whether to use qtmultimedia method
+    Q_INVOKABLE bool getUseControlFile();
+    Q_INVOKABLE void setUseControlFile(bool);
+
+    Q_INVOKABLE bool getTechnologyDialogCompleted();
+    Q_INVOKABLE void setTechnologyDialogCompleted();
+
+    bool isQtMultimediaOn();
+    void setQtMultimediaOn(bool);
+
 signals:
     void isOnBoolChanged(bool);
     void controlFilePathChanged(QString);
     void deviceChanged(QString);
     void isValidPathChanged(bool);
     void brightnessChanged(QString);
+
+    void useControlFileChanged(bool);
+    void technologyDialogCompletedChanged(bool);
+
+    void qtMultimediaOnChanged(bool);
 
 private:
     bool checkFile();
@@ -91,11 +116,14 @@ private:
 
     QFile file;
     bool m_isOn;
+    bool m_qtMultimediaOn;
     bool m_isValid;
     QString controlFilePath;
     QSettings *applicationSettings;
     QString m_device;
     QString m_brightness;
+
+    bool m_useControlFile;
 };
 
 #endif // LED_CONTROL_H

@@ -52,102 +52,127 @@ Page {
             anchors.leftMargin: Theme.paddingMedium
             anchors.rightMargin: Theme.paddingMedium
 
-
-            Label {
+            ComboBox {
+                id: torchmethod
                 width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
-                text: qsTr("Control file settings")
-            }
-            Item {
-                width: 1
-                height: Theme.paddingLarge
-            }
+                label: "Torch method"
+                description: "QtMultimedia is preferred (should be brighter and more portable), ControlFile available as a fallback (hardware specific workaround for ports)"
 
-            Label {
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "This page shows the path to the control file, which controls the state of the camera flash LED. This should be auto-detected; the current settings are shown below."
-            }
-            Item {
-                width: 1
-                height: Theme.paddingLarge
-            }
+                menu: ContextMenu {
+                    MenuItem { text: "QtMultimedia" }
+                    MenuItem { text: "ControlFile" }
+                }
 
-            DetailItem {
-                label: "Device"
-                value: led.device
-            }
+                currentIndex: led.useControlFile // if useControlFile = 1 then currentIndex=1 ("ControlFile"); if useControlFile = 0, currentIndex = 0 ("QtMultimedia")
 
-            DetailItem {
-                label: "Control file"
-                value: led.controlFile
-            }
-
-            DetailItem {
-                label: "Max brightness"
-                value: led.brightness
-            }
-
-            Label {
-                visible: !led.validPath
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeLarge
-                color: Theme.highlightColor
-                text: "Invalid control file path"
-            }
-
-            Item {
-                width: 1
-                height: Theme.paddingLarge
-            }
-
-            Button {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Detect path")
-                onClicked: {
-                    console.log("clicked!")
-                    led.detectPath()
-                    console.log("current value of controlFile is " + led.controlFile)
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                        case 0: led.useControlFile = false; break;
+                        case 1: led.useControlFile = true; break;
+                    }
                 }
             }
-            Item {
-                width: 1
-                height: Theme.paddingLarge
-            }
+
+            // group the controlfile settings together in a column so they can be hidden if gstreamer is used
+            Column {
+                id:controlfilesettings
+                anchors.left: parent.left
+                anchors.right: parent.right
+                visible: torchmethod.currentIndex
 
 
-            Label {
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "If your phone shows up as \"Unknown\" you can manually edit the configuration file at ~/.config/harbour-hammerhead-torch/harbour-hammerhead-torch.conf and specify the device name and path to the control file."
-            }
 
-            Item {
-                width: 1
-                height: Theme.paddingLarge
-            }
+                SectionHeader { text: "Control file settings" }
 
-            Label {
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "If your control file is not auto-detected please let me know so I can add support for your hardware."
-            }
+                Item {
+                    width: 1
+                    height: Theme.paddingLarge
+                }
 
-            Item {
-                width: 1
-                height: 2 * Theme.paddingLarge
+                Label {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: Theme.secondaryColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    text: "This page shows the path to the control file, which controls the state of the camera flash LED. This should be auto-detected; the current settings are shown below."
+                }
+                Item {
+                    width: 1
+                    height: Theme.paddingLarge
+                }
+
+                DetailItem {
+                    label: "Device"
+                    value: led.device
+                }
+
+                DetailItem {
+                    label: "Control file"
+                    value: led.controlFile
+                }
+
+                DetailItem {
+                    label: "Max brightness"
+                    value: led.brightness
+                }
+
+                Label {
+                    visible: !led.validPath
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: Theme.fontSizeLarge
+                    color: Theme.highlightColor
+                    text: "Invalid control file path"
+                }
+
+                Item {
+                    width: 1
+                    height: Theme.paddingLarge
+                }
+
+                Button {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: qsTr("Detect path")
+                    onClicked: {
+                        console.log("clicked!")
+                        led.detectPath()
+                        console.log("current value of controlFile is " + led.controlFile)
+                    }
+                }
+                Item {
+                    width: 1
+                    height: Theme.paddingLarge
+                }
+
+
+                Label {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: Theme.secondaryColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    text: "If your phone shows up as \"Unknown\" you can manually edit the configuration file at ~/.config/harbour-hammerhead-torch/harbour-hammerhead-torch.conf and specify the device name and path to the control file."
+                }
+
+                Item {
+                    width: 1
+                    height: Theme.paddingLarge
+                }
+
+                Label {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: Theme.secondaryColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    text: "If your control file is not auto-detected please let me know so I can add support for your hardware."
+                }
+
+                Item {
+                    width: 1
+                    height: 2 * Theme.paddingLarge
+                }
             }
         }
 
