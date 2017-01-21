@@ -7,6 +7,7 @@ Hammerhead Torch now automatically detects the following hardware:
 * Fairphone 2
 * Motorola Photon Q
 * Jolla C / Intex Aqua Fish
+* Motorola Moto-G (2013)
 
 Support can be added for any device with an LED that can be controlled using a simple switch file (e.g. file contents >0 for on, 0 for off) by mapping the hardware device name found in /etc/hw-release to the control file path using controlfile.conf.
 
